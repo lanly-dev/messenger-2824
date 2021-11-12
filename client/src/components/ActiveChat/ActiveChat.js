@@ -41,12 +41,11 @@ const ActiveChat = (props) => {
 }
 
 const mapStateToProps = (state) => {
-  return {
-    user: state.user,
-    conversation:
-      state.conversations &&
-      state.conversations.find((conversation) => conversation.otherUser.username === state.activeConversation)
-  }
+  const { conversations, activeConversation, user } = state
+  let conversation = conversations?.find(({ otherUser }) => otherUser.username === activeConversation)
+  const { parse, stringify } = JSON
+  conversation = parse(stringify(conversation || {})) // cloning
+  return { user, conversation }
 }
 
 export default connect(mapStateToProps, null)(ActiveChat)
