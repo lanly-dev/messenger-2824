@@ -1,70 +1,50 @@
-import React, { useState } from "react";
-import { Redirect, useHistory } from "react-router-dom";
-import { connect } from "react-redux";
-import {
-  Grid,
-  Box,
-  Typography,
-  Button,
-  FormControl,
-  TextField,
-  FormHelperText,
-} from "@material-ui/core";
-import { register } from "./store/utils/thunkCreators";
+import React, { useState } from 'react'
+import { Redirect, useHistory } from 'react-router-dom'
+import { connect } from 'react-redux'
+import { Grid, Box, Typography, Button, FormControl, TextField, FormHelperText } from '@material-ui/core'
+import { register } from './store/utils/thunkCreators'
 
 const Login = (props) => {
-  const history = useHistory();
-  const { user, register } = props;
-  const [formErrorMessage, setFormErrorMessage] = useState({});
+  const history = useHistory()
+  const { user, register } = props
+  const [formErrorMessage, setFormErrorMessage] = useState({})
 
   const handleRegister = async (event) => {
-    event.preventDefault();
-    const username = event.target.username.value;
-    const email = event.target.email.value;
-    const password = event.target.password.value;
-    const confirmPassword = event.target.confirmPassword.value;
+    event.preventDefault()
+    const username = event.target.username.value
+    const email = event.target.email.value
+    const password = event.target.password.value
+    const confirmPassword = event.target.confirmPassword.value
 
     if (password !== confirmPassword) {
-      setFormErrorMessage({ confirmPassword: "Passwords must match" });
-      return;
+      setFormErrorMessage({ confirmPassword: 'Passwords must match' })
+      return
     }
 
-    await register({ username, email, password });
-  };
+    await register({ username, email, password })
+  }
 
   if (user.id) {
-    return <Redirect to="/home" />;
+    return <Redirect to="/home" />
   }
 
   return (
-    <Grid container justify="center">
+    <Grid container justifyContent="center">
       <Box>
         <Grid container item>
           <Typography>Need to log in?</Typography>
-          <Button onClick={() => history.push("/login")}>Login</Button>
+          <Button onClick={() => history.push('/login')}>Login</Button>
         </Grid>
         <form onSubmit={handleRegister}>
           <Grid>
             <Grid>
               <FormControl>
-                <TextField
-                  aria-label="username"
-                  label="Username"
-                  name="username"
-                  type="text"
-                  required
-                />
+                <TextField aria-label="username" label="Username" name="username" type="text" required />
               </FormControl>
             </Grid>
             <Grid>
               <FormControl>
-                <TextField
-                  label="E-mail address"
-                  aria-label="e-mail address"
-                  type="email"
-                  name="email"
-                  required
-                />
+                <TextField label="E-mail address" aria-label="e-mail address" type="email" name="email" required />
               </FormControl>
             </Grid>
             <Grid>
@@ -77,9 +57,7 @@ const Login = (props) => {
                   name="password"
                   required
                 />
-                <FormHelperText>
-                  {formErrorMessage.confirmPassword}
-                </FormHelperText>
+                <FormHelperText>{formErrorMessage.confirmPassword}</FormHelperText>
               </FormControl>
             </Grid>
             <Grid>
@@ -92,9 +70,7 @@ const Login = (props) => {
                   name="confirmPassword"
                   required
                 />
-                <FormHelperText>
-                  {formErrorMessage.confirmPassword}
-                </FormHelperText>
+                <FormHelperText>{formErrorMessage.confirmPassword}</FormHelperText>
               </FormControl>
             </Grid>
             <Button type="submit" variant="contained" size="large">
@@ -104,21 +80,21 @@ const Login = (props) => {
         </form>
       </Box>
     </Grid>
-  );
-};
+  )
+}
 
 const mapStateToProps = (state) => {
   return {
-    user: state.user,
-  };
-};
+    user: state.user
+  }
+}
 
 const mapDispatchToProps = (dispatch) => {
   return {
     register: (credentials) => {
-      dispatch(register(credentials));
-    },
-  };
-};
+      dispatch(register(credentials))
+    }
+  }
+}
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(Login)
