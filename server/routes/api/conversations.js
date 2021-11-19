@@ -7,9 +7,8 @@ const onlineUsers = require('../../onlineUsers')
 // include other user model so we have info on username/profile pic (don't include current user info)
 router.get('/', async (req, res, next) => {
   try {
-    if (!req.user) {
-      return res.sendStatus(401)
-    }
+    if (!req.user) return res.sendStatus(401)
+
     const userId = req.user.id
     const conversations = await Conversation.findAll({
       where: {
@@ -67,8 +66,24 @@ router.get('/', async (req, res, next) => {
         convoJSON.otherUser.online = false
       }
 
-      // set properties for notification count and latest message preview
+      // set latest message preview
       convoJSON.latestMessageText = convoJSON.messages[0].text
+
+      // set notification count
+      let count = 0
+      for (let i = 0 ; i < convoJSON.messages.length; i++) {
+        const { isRead } = convoJSON.messages[i]
+        if (!isRead) {
+          count++
+          continue
+        }
+        // Until it hits isRead = true
+        const { createdAt } = convoJSON.messages[i]
+        convoJSON.unreadCount = count
+        convoJSON.lastMessageReadTime = createdAt
+        break
+      }
+      // Reverse order
       convoJSON.messages.sort((a, b) => a.createdAt < b.createdAt ? -1 : 1)
       conversations[i] = convoJSON
     }
