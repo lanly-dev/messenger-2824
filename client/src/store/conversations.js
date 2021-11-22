@@ -15,6 +15,7 @@ const REMOVE_OFFLINE_USER = 'REMOVE_OFFLINE_USER'
 const SET_SEARCHED_USERS = 'SET_SEARCHED_USERS'
 const CLEAR_SEARCHED_USERS = 'CLEAR_SEARCHED_USERS'
 const ADD_CONVERSATION = 'ADD_CONVERSATION'
+const MARK_READ_CONVERSATION = 'MARK_READ_CONVERSATION'
 
 // ACTION CREATORS
 
@@ -29,6 +30,13 @@ export const setNewMessage = (message, sender) => {
   return {
     type: SET_MESSAGE,
     payload: { message, sender: sender || null }
+  }
+}
+
+export const markReadConversation = (conversationId) => {
+  return  {
+    type: MARK_READ_CONVERSATION,
+    conversationId
   }
 }
 

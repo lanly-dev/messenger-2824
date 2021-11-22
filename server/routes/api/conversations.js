@@ -70,18 +70,23 @@ router.get('/', async (req, res, next) => {
       convoJSON.latestMessageText = convoJSON.messages[0].text
 
       // set notification count
-      let count = 0
-      for (let i = 0 ; i < convoJSON.messages.length; i++) {
-        const { isRead } = convoJSON.messages[i]
-        if (!isRead) {
-          count++
+      convoJSON.unreadCount = 0
+      for (let i = 0; i < convoJSON.messages.length; i++) {
+        const { isRead, senderId } = convoJSON.messages[i]
+        if (senderId === convoJSON.otherUser.id && !isRead) {
+          convoJSON.unreadCount++
           continue
         }
-        // Until it hits isRead = true
-        const { createdAt } = convoJSON.messages[i]
-        convoJSON.unreadCount = count
-        convoJSON.lastMessageReadTime = createdAt
         break
+      }
+
+      for (let i = 0; i < convoJSON.messages.length; i++) {
+        const { createdAt, isRead, senderId } = convoJSON.messages[i]
+        if (senderId !== userId) continue
+        if (isRead) {
+          convoJSON.lastMessageReadTime = createdAt
+          break
+        }
       }
       // Reverse order
       convoJSON.messages.sort((a, b) => a.createdAt < b.createdAt ? -1 : 1)
@@ -93,5 +98,26 @@ router.get('/', async (req, res, next) => {
     next(error)
   }
 })
+
+router.patch('/:id', async (req, res, next) => {
+  try {
+    if (!req.user) return res.sendStatus(401)
+
+    const userId = req.user.id
+    const { id: conversationId } = req.params
+    console.log(conversationId)
+    await Message.update({ isRead: true }, {
+      where: {
+        conversationId,
+        senderId: { [Op.not]: userId },
+        isRead: false
+      }
+    })
+    res.sendStatus(200)
+  } catch (error) {
+    next(error)
+  }
+})
+
 
 module.exports = router
