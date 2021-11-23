@@ -7,9 +7,8 @@ const onlineUsers = require('../../onlineUsers')
 // include other user model so we have info on username/profile pic (don't include current user info)
 router.get('/', async (req, res, next) => {
   try {
-    if (!req.user) {
-      return res.sendStatus(401)
-    }
+    if (!req.user) return res.sendStatus(401)
+
     const userId = req.user.id
     const conversations = await Conversation.findAll({
       where: {
@@ -67,8 +66,29 @@ router.get('/', async (req, res, next) => {
         convoJSON.otherUser.online = false
       }
 
-      // set properties for notification count and latest message preview
+      // set latest message preview
       convoJSON.latestMessageText = convoJSON.messages[0].text
+
+      // set notification count
+      convoJSON.unreadCount = 0
+      for (let i = 0; i < convoJSON.messages.length; i++) {
+        const { isRead, senderId } = convoJSON.messages[i]
+        if (senderId === convoJSON.otherUser.id && !isRead) {
+          convoJSON.unreadCount++
+          continue
+        }
+        break
+      }
+
+      for (let i = 0; i < convoJSON.messages.length; i++) {
+        const { createdAt, isRead, senderId } = convoJSON.messages[i]
+        if (senderId !== userId) continue
+        if (isRead) {
+          convoJSON.lastMessageReadTime = createdAt
+          break
+        }
+      }
+      // Reverse order
       convoJSON.messages.sort((a, b) => a.createdAt < b.createdAt ? -1 : 1)
       conversations[i] = convoJSON
     }
@@ -78,5 +98,32 @@ router.get('/', async (req, res, next) => {
     next(error)
   }
 })
+
+router.patch('/:id', async (req, res, next) => {
+  try {
+    if (!req.user) return res.sendStatus(401)
+
+    const userId = req.user.id
+    const { id } = req.params
+
+    const convoFound = await Conversation.findOne({ where: { id } })
+
+    if (!convoFound) return res.sendStatus(404)
+    const { user1Id, user2Id } = convoFound
+    if (![user1Id, user2Id].includes(userId)) return res.sendStatus(403)
+
+    await Message.update({ isRead: true }, {
+      where: {
+        conversationId: id,
+        senderId: { [Op.not]: userId },
+        isRead: false
+      }
+    })
+    res.sendStatus(200)
+  } catch (error) {
+    next(error)
+  }
+})
+
 
 module.exports = router

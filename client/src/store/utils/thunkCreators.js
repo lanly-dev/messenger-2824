@@ -86,6 +86,15 @@ const sendMessage = (data, body) => {
   })
 }
 
+export const patchReadConversation = (conversationId) => async (dispatch) => {
+  try {
+    await axios.patch(`/api/conversations/${conversationId}`)
+    //TODO refresh other users's conversation?
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 // message format to send: {recipientId, text, conversationId}
 // conversationId will be set to null if its a brand new conversation
 export const postMessage = (body) => async (dispatch) => {

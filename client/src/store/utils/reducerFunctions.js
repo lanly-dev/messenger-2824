@@ -12,7 +12,7 @@ export const addMessageToStore = (state, payload) => {
   }
 
   return state.map((convo) => {
-    if (convo.id !== message.conversationId) return { ...convo }
+    if (convo.id !== message.conversationId) return convo
     convo.messages.push(message)
     convo.latestMessageText = message.text
     return { ...convo }
@@ -21,25 +21,17 @@ export const addMessageToStore = (state, payload) => {
 
 export const addOnlineUserToStore = (state, id) => {
   return state.map((convo) => {
-    if (convo.otherUser.id === id) {
-      const convoCopy = { ...convo }
-      convoCopy.otherUser.online = true
-      return convoCopy
-    } else {
-      return convo
-    }
+    if (convo.otherUser.id !== id) return convo
+    convo.otherUser.online = true
+    return { ...convo }
   })
 }
 
 export const removeOfflineUserFromStore = (state, id) => {
   return state.map((convo) => {
-    if (convo.otherUser.id === id) {
-      const convoCopy = { ...convo }
-      convoCopy.otherUser.online = false
-      return convoCopy
-    } else {
-      return convo
-    }
+    if (convo.otherUser.id !== id) return convo
+    convo.otherUser.online = false
+    return { ...convo }
   })
 }
 
@@ -65,7 +57,7 @@ export const addSearchedUsersToStore = (state, users) => {
 
 export const addNewConvoToStore = (state, recipientId, message) => {
   return state.map((convo) => {
-    if (convo.otherUser.id !== recipientId) return { ...convo }
+    if (convo.otherUser.id !== recipientId) return convo
     convo.id = message.conversationId
     convo.messages.push(message)
     convo.latestMessageText = message.text
