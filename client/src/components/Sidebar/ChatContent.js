@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Typography } from '@material-ui/core'
+import { Badge, Box, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles((theme) => ({
@@ -17,23 +17,18 @@ const useStyles = makeStyles((theme) => ({
   previewText: {
     fontSize: 12,
     letterSpacing: -0.17,
-    color: ({unreadCount}) => unreadCount > 0 ? 'black' : '#9CADC8',
-    fontWeight: ({unreadCount}) => unreadCount > 0 ? 'bold' : 'normal'
+    color: ({ unreadCount }) => unreadCount > 0 ? 'black' : '#9CADC8',
+    fontWeight: ({ unreadCount }) => unreadCount > 0 ? 'bold' : 'normal'
   },
-  previewUnreadCount: {
-    fontSize: 12,
-    color: 'white',
-    backgroundColor: '#6CC1FF',
-    borderRadius: '100%',
-    padding: '.1em .5em',
-    marginRight: '1em'
+  badgeMarginRight: {
+    marginRight: theme.spacing(4)
   }
 }))
 
 const ChatContent = (props) => {
   const { conversation } = props
   const { latestMessageText, otherUser, unreadCount } = conversation
-  const classes = useStyles({unreadCount})
+  const classes = useStyles({ unreadCount })
 
   return (
     <Box className={classes.root}>
@@ -41,7 +36,7 @@ const ChatContent = (props) => {
         <Typography className={classes.username}>{otherUser.username}</Typography>
         <Typography className={classes.previewText}>{latestMessageText}</Typography>
       </Box>
-      {unreadCount > 0 && <Typography className={classes.previewUnreadCount}>{unreadCount}</Typography>}
+      <Badge className={classes.badgeMarginRight} badgeContent={unreadCount} color='primary'></Badge>
     </Box>
   )
 }

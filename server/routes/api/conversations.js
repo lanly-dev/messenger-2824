@@ -104,11 +104,17 @@ router.patch('/:id', async (req, res, next) => {
     if (!req.user) return res.sendStatus(401)
 
     const userId = req.user.id
-    const { id: conversationId } = req.params
-    console.log(conversationId)
+    const { id } = req.params
+
+    const convoFound = await Conversation.findOne({ where: { id } })
+
+    if (!convoFound) return res.sendStatus(404)
+    const { user1Id, user2Id } = convoFound
+    if (![user1Id, user2Id].includes(userId)) return res.sendStatus(403)
+
     await Message.update({ isRead: true }, {
       where: {
-        conversationId,
+        conversationId: id,
         senderId: { [Op.not]: userId },
         isRead: false
       }
