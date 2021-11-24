@@ -1,15 +1,15 @@
 const Sequelize = require('sequelize')
 const db = require('../db')
 
-const Message = db.define('message', {
-  text: {
-    type: Sequelize.STRING,
+const Member = db.define('member', {
+  conversationId: {
+    type: Sequelize.INTEGER,
     allowNull: false
   },
-  senderId: {
+  userId: {
     type: Sequelize.INTEGER,
     allowNull: false
   }
 })
 
-module.exports = Message
+module.exports = Member
