@@ -7,7 +7,7 @@ const Seen = require('./seen')
 // associations
 
 User.hasMany(Conversation)
-Conversation.belongsTo(User)
+Conversation.belongsToMany(User)
 Conversation.hasMany(Member)
 Conversation.hasMany(Seen)
 Conversation.hasMany(Message)
